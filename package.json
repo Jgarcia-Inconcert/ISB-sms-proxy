@@ -1,0 +1,22 @@
+{
+  "name": "utel-sms-proxy",
+  "version": "1.0.0",
+  "description": "sms proxy occ",
+  "main": "index.js",
+  "scripts": {
+    "test": "node server.js",
+    "clean": "rm utel-sms-proxy.zip",
+    "zip": "zip -r utel-sms-proxy.zip index.js node_modules package.json api config .env",
+    "deploy": "aws lambda create-function --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip --handler index.handler --runtime nodejs22.x --role arn:aws:iam::879072738023:role/lambda-apigateway-role",
+    "upload": "aws lambda update-function-code --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip"
+  },
+  "author": "Yover",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "node-fetch": "^2.7.0",
+    "serverless-http": "^3.2.0"
+  }
+}
