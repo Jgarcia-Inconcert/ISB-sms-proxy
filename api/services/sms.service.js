@@ -48,16 +48,16 @@ class SMSService {
           for (var address of request.addresses) {
                if (address) {
                     if (!error) {
-                         let url = `${baseUrl}${uuid}/${username}?phone=${address}&message=${message}`;
+                         const encodedMessage = encodeURIComponent(message);
+                         let url = `${baseUrl}${uuid}/${username}?phone=${address}&message=${encodedMessage}`;
                          console.log('[DEBUG] URL request ISB: ', url);
-
                          const response = await fetch(url);
                          const data = await response.text();
-                         const parts = text.split(' ');
+
+                         const parts = data.split(' ');
 
                          const statusCode = parts[0];
                          const statusText = parts[1];
-
 
                          console.log('[DEBUG] Response ISB: ', JSON.stringify(data, null, 2));
 
@@ -71,7 +71,7 @@ class SMSService {
                          } else {
                               resp.addresses[address] = {
                                    status: sms_failed_status,
-                                   reason: text
+                                   reason: data
                               };
                          }
 
