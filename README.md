@@ -2,13 +2,13 @@
 
 ## DESCRIPCIÓN
 
-### Propósito 
+### Propósito
 
 API REST desarrollada para integración SMS externa con OCC. Solo contempla SMS saliente desde OCC, sin notificación de estado de SMS asincrono (se retorna el estado en el response de forma sincrona, no usa el webhook de OCC).
 
 Estructura SMS saliente OCC (request, response):
 
-https://inconcert.atlassian.net/wiki/spaces/i6Docs/pages/159842336/Agregar+canal+SMS+al+sistema+omniChannel
+[Ver documentación](https://inconcert.atlassian.net/wiki/spaces/i6Docs/pages/159842336/Agregar+canal+SMS+al+sistema+omniChannel)
 
 ### Tecnologías clave
 
@@ -34,12 +34,11 @@ https://inconcert.atlassian.net/wiki/spaces/i6Docs/pages/159842336/Agregar+canal
 
 ## CONFIGURACIÓN
 
-Role AWS Utel: arn:aws:iam::879072738023:role/lambda-apigateway-role
+Role AWS Isb: arn:aws:iam::699217828267:role/lambda-apigateway-role //pendiente
 
-ID de cuenta: 
-  304-utel
-  879072738023
-
+ID de cuenta:
+  sms-isb //pendiente
+  879072738023 //pendiente
 
 ### CONFIGURAR LAMBDA
 
@@ -47,13 +46,13 @@ La configuración del rol se puede realizar en la interfaz de AWS
 
 1. Primero debemos crear una política de permisos que permita a la función acceder a los recursos de AWS necesarios, en este caso se configura para que escriba registros en Amazon CloudWatch.
 
-2. Abrir la página de politicas IAM. https://console.aws.amazon.com/iam/home#/policies 
+2. Abrir la página de politicas IAM: [https://console.aws.amazon.com/iam/home#/policies](https://console.aws.amazon.com/iam/home#/policies)
 
 3. Seleccionar Crear política.
 
 4. Elegir JSON y colocar la siguiente política personalizada.
 
-```
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -87,7 +86,7 @@ Luego colocas los datos de Key y Secret. En caso se use token se puede añadir e
 
 > vim /home/user/.aws/credentials
 
-```
+```text
 [default]
 aws_access_key_id = <key_id>
 aws_secret_access_key = <access_key>
@@ -98,7 +97,7 @@ aws_session_token = <session_token>
 
 1. Clonar el repositorio
 
-```
+```bash
 git clone X
 cd X
 ```
@@ -109,7 +108,7 @@ cd X
 
 3. Crear las variables de entorno .env en el directorio raiz con las siguientes variables (reemplazar segun sea el caso).
 
-```
+```text
 # PARAMETROS OCC
 SMS_QUEUE_STATUS="SEND"
 SMS_FAILED_STATUS="FAIL"
@@ -125,13 +124,16 @@ SMS_PASSWORD="Utelgy2dm6*!"
 
 4. Comandos disponibles en package.json
 
-```
+```text
     "test": "node server.js"
     "clean": "rm utel-sms-proxy.zip",
     "zip": "zip -r utel-sms-proxy.zip index.js node_modules package.json api config .env",
     "deploy": "aws lambda create-function --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip --handler index.handler --runtime nodejs22.x --role arn:aws:iam::481665103601:role/lambda-apigateway-role",
     "upload": "aws lambda update-function-code --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip"
 ```
+
+**Detalle**
+
 * test: Ejecuta el servicio localmente para probar los metodos.
 
 * zip: Compila las fuentes necesarias para subirlas a lambda.
@@ -149,16 +151,16 @@ SMS_PASSWORD="Utelgy2dm6*!"
 
 6. Existen metodos que sirven para probar que el API este desplegada correctamente, estos son:
 
-- {url}/api/
-- {url}/api/test
+    ```{url}/api/```
+    ```{url}/api/test```
 
 7. El metodo de envio es:
 
-- {url}/api/send
+    ```{url}/api/send```
 
 8. Estructura del body que espera el metodo send:
 
-```
+```json
 {
     "message":{
         "text": "Prueba Inconcert"
@@ -172,7 +174,7 @@ SMS_PASSWORD="Utelgy2dm6*!"
 
 9. Respuesta del metodo send:
 
-```
+```json
 {
     "status": true,
     "reason": "",
@@ -197,7 +199,7 @@ La configuración de API Gateway se puede realizar en la interfaz de AWS bajo lo
 
 4. Validar que en el apartado "Integration response" figure con "Proxy Integration".
 
-5. Probar los metodos con Postman :D.
+5. Probar los metodos con Postman.
 
 Para mayor informacion de la configuracion de AWS, la guia que se siguio toma las pautas para configurar:
 
@@ -207,7 +209,7 @@ Para mayor informacion de la configuracion de AWS, la guia que se siguio toma la
 - API Gateway.
 
 De la siguiente fuente:
-https://docs.aws.amazon.com/es_es/lambda/latest/dg/services-apigateway-tutorial.html
+[Docs AWS](https://docs.aws.amazon.com/es_es/lambda/latest/dg/services-apigateway-tutorial.html)
 
 ## SEGURIDAD DE FILTRADO POR IP QUE LLAMA AL METODO
 

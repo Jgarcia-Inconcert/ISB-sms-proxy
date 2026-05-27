@@ -3,86 +3,88 @@ const { config } = require('../../config/config');
 
 class SMSService {
 
-    constructor(){}
+     constructor() { }
 
-    async send(request){
+     async send(request) {
 
-        let reason = "";
-        let error = false;
+          let reason = "";
+          let error = false;
 
-           
-       const baseUrl = config.sms_infobip_url;
-       const username = config.sms_username;
-       const password = config.sms_password;
-       
-       const sms_failed_status = config.sms_failed_status;
-       const sms_queue_status = config.sms_queue_status;
 
-        console.log('[DEBUG] Request SMSService: ', JSON.stringify(request, null, 2));
+          const baseUrl = config.sms_isb_url;
+          const username = config.sms_username;
+          const uuid = config.sms_uuid;
 
-        // Validate request
-        if(!request.addresses || request.addresses.length === 0){
-           console.log('[ERROR] El telofono es requerido');
-           // Retorno error
-           reason = "El telofono es requerido";
+          const sms_failed_status = config.sms_failed_status;
+          const sms_queue_status = config.sms_queue_status;
 
-           error = true;
-       }
-   
-       if(!request.message){
-            console.log('[ERROR] El mensaje es requerido');
-            // Retorno error
-            reason = "El mensaje es requerido";
+          console.log('[DEBUG] Request SMSService: ', JSON.stringify(request, null, 2));
 
-            error = true;
-       }
-       
-       const message = request.message.text;
-   
-       let resp = {
-            status : false,
-            reason : reason,
-            addresses : {}
-       };
-   
-       for(var address of request.addresses){
-            if(address){
-               if(!error){
-                    let url = `${baseUrl}username=${username}&password=${password}&to=${address}&text=${message}`;
-                    console.log('[DEBUG] URL request Infobip: ', url);
+          // Validate request
+          if (!request.addresses || request.addresses.length === 0) {
+               console.log('[ERROR] El telofono es requerido');
+               // Retorno error
+               reason = "El telofono es requerido";
 
-                    const response = await fetch(url);
-                    const data = await response.json();
-                    
-                    console.log('[DEBUG] Response Infobip: ', JSON.stringify(data, null, 2));
+               error = true;
+          }
 
-                    if(data.messages[0].status.groupName == 'PENDING')
-                    {
-                         resp.status = true;
-                         resp.reason = "";
-                         resp.addresses[address] = {
-                              status: sms_queue_status,
-                              reason: ""
+          if (!request.message) {
+               console.log('[ERROR] El mensaje es requerido');
+               // Retorno error
+               reason = "El mensaje es requerido";
+
+               error = true;
+          }
+
+          const message = request.message.text;
+
+          let resp = {
+               status: false,
+               reason: reason,
+               addresses: {}
+          };
+
+          for (var address of request.addresses) {
+               if (address) {
+                    if (!error) {
+                         let url = `${baseUrl}${uuid}/${username}?phone=${address}&message=${message}`;
+                         console.log('[DEBUG] URL request ISB: ', url);
+
+                         const response = await fetch(url);
+                         const data = await response.text();
+                         const parts = text.split(' ');
+
+                         const statusCode = parts[0];
+                         const statusText = parts[1];
+
+
+                         console.log('[DEBUG] Response ISB: ', JSON.stringify(data, null, 2));
+
+                         if (statusCode === '200' && statusText === 'Recibido') {
+                              resp.status = true;
+                              resp.reason = "";
+                              resp.addresses[address] = {
+                                   status: sms_queue_status,
+                                   reason: ""
+                              };
+                         } else {
+                              resp.addresses[address] = {
+                                   status: sms_failed_status,
+                                   reason: text
+                              };
                          }
-                    }
-                    else{
+
+                    } else {
                          resp.addresses[address] = {
                               status: sms_failed_status,
-                              reason: data.messages[0].status.groupName
+                              reason: reason
                          }
                     }
-
-                    
-               }else{
-                    resp.addresses[address] = {
-                         status: sms_failed_status,
-                         reason: reason
-                    }
                }
-            }
-       }
-       return resp;        
-    }
+          }
+          return resp;
+     }
 }
 
 module.exports = SMSService;
