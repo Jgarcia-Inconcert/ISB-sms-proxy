@@ -52,23 +52,23 @@ La configuración del rol se puede realizar en la interfaz de AWS
 
 4. Elegir JSON y colocar la siguiente política personalizada.
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
+    ```json
     {
-      "Sid": "",
-      "Resource": "*",
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Effect": "Allow"
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Sid": "",
+        "Resource": "*",
+        "Action": [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        ],
+        "Effect": "Allow"
+        }
+    ]
     }
-  ]
-}
-```
+    ```
 
 5. Dar siguiente y en el nombre de la política colocar "lambda-apigateway-policy" (esto lo puedes hacer como definas).
 
@@ -97,55 +97,55 @@ aws_session_token = <session_token>
 
 1. Clonar el repositorio
 
-```bash
-git clone X
-cd X
-```
+    ```bash
+    git clone X
+    cd X
+    ```
 
 2. Instalar dependencias
 
-> npm install
+    > npm install
 
 3. Crear las variables de entorno .env en el directorio raiz con las siguientes variables (reemplazar segun sea el caso).
 
-```text
-# PARAMETROS OCC
-SMS_QUEUE_STATUS="SEND"
-SMS_FAILED_STATUS="FAIL"
+    ```text
+    # PARAMETROS OCC
+    SMS_QUEUE_STATUS="SEND"
+    SMS_FAILED_STATUS="FAIL"
 
-# PARAMETROS TEST LOCAL
-PORT=3001
+    # PARAMETROS TEST LOCAL
+    PORT=3001
 
-# PARAMETROS INFOBIP - METODO GET USADO POR UTEL
-SMS_INFOBIP_URL="https://gy2dm6.api.infobip.com/sms/1/text/query?"
-SMS_USERNAME="Utel3_IC"
-SMS_PASSWORD="Utelgy2dm6*!"
-```
+    # PARAMETROS INFOBIP - METODO GET USADO POR UTEL
+    SMS_INFOBIP_URL="https://gy2dm6.api.infobip.com/sms/1/text/query?"
+    SMS_USERNAME="Utel3_IC"
+    SMS_PASSWORD="Utelgy2dm6*!"
+    ```
 
 4. Comandos disponibles en package.json
 
-```text
-    "test": "node server.js"
-    "clean": "rm utel-sms-proxy.zip",
-    "zip": "zip -r utel-sms-proxy.zip index.js node_modules package.json api config .env",
-    "deploy": "aws lambda create-function --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip --handler index.handler --runtime nodejs22.x --role arn:aws:iam::481665103601:role/lambda-apigateway-role",
-    "upload": "aws lambda update-function-code --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip"
-```
+    ```text
+        "test": "node server.js"
+        "clean": "rm utel-sms-proxy.zip",
+        "zip": "zip -r utel-sms-proxy.zip index.js node_modules package.json api config .env",
+        "deploy": "aws lambda create-function --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip --handler index.handler --runtime nodejs22.x --role arn:aws:iam::481665103601:role/lambda-apigateway-role",
+        "upload": "aws lambda update-function-code --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip"
+    ```
 
-**Detalle**
+    Detalle
 
-* test: Ejecuta el servicio localmente para probar los metodos.
+    - test: Ejecuta el servicio localmente para probar los metodos.
 
-* zip: Compila las fuentes necesarias para subirlas a lambda.
+    - zip: Compila las fuentes necesarias para subirlas a lambda.
 
-* deploy: Crea la funcion inicial en lambda con el zip compilado, se debe ajustar los parametros según el caso
+    - deploy: Crea la funcion inicial en lambda con el zip compilado, se debe ajustar los parametros según el caso
     - runtime: version de nodejs.
     - zip-file: nombre del zip.
     - role: rol creado en AWS.
 
-* upload: Actualiza la funcion lambda.
+    - upload: Actualiza la funcion lambda.
 
-* Clean: Elimina el zip generado.
+    - Clean: Elimina el zip generado.
 
 5. En caso se requiera editar la lógica revisar api/services/sms.service.js, este contiene el consumo de la API de cliente.
 
@@ -160,32 +160,32 @@ SMS_PASSWORD="Utelgy2dm6*!"
 
 8. Estructura del body que espera el metodo send:
 
-```json
-{
-    "message":{
-        "text": "Prueba Inconcert"
-    },
-    "addresses":[
-        "51965260488"
-    ]
+    ```json
+    {
+        "message":{
+            "text": "Prueba Inconcert"
+        },
+        "addresses":[
+            "51965260488"
+        ]
 
-}
-```
+    }
+    ```
 
 9. Respuesta del metodo send:
 
-```json
-{
-    "status": true,
-    "reason": "",
-    "addresses": {
-        "51965260488": {
-            "status": "SEND",
-            "reason": ""
+    ```json
+    {
+        "status": true,
+        "reason": "",
+        "addresses": {
+            "51965260488": {
+                "status": "SEND",
+                "reason": ""
+            }
         }
     }
-}
-```
+    ```
 
 ### CONFIGURAR API GATEWAY
 

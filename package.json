@@ -1,14 +1,14 @@
 {
-  "name": "utel-sms-proxy",
+  "name": "isb-sms-proxy",
   "version": "1.0.0",
   "description": "sms proxy occ",
   "main": "index.js",
   "scripts": {
     "test": "node server.js",
-    "clean": "rm utel-sms-proxy.zip",
-    "zip": "zip -r utel-sms-proxy.zip index.js node_modules package.json api config .env",
-    "deploy": "aws lambda create-function --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip --handler index.handler --runtime nodejs22.x --role arn:aws:iam::879072738023:role/lambda-apigateway-role",
-    "upload": "aws lambda update-function-code --function-name utel-sms-proxy-function --zip-file fileb://utel-sms-proxy.zip"
+    "clean": "rm isb-sms-proxy.zip",
+    "zip": "zip -r isb-sms-proxy.zip index.js node_modules package.json api config .env",
+    "deploy": "aws lambda create-function --function-name isb-sms-proxy-function --zip-file fileb://isb-sms-proxy.zip --handler index.handler --runtime nodejs22.x --role arn:aws:iam::699217828267:role/lambda-apigateway-role",
+    "upload": "aws lambda update-function-code --function-name isb-sms-proxy-function --zip-file fileb://isb-sms-proxy.zip"
   },
   "author": "Yover",
   "license": "ISC",
